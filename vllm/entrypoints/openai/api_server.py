@@ -1,5 +1,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+import os
+try:
+    # Assumes kernel_extractor.py is in the vLLM root directory
+    from kernel_extractor import patch_triton_jit, KernelExtractionManager
+
+    # Apply the patch for Triton JIT interception
+    patch_triton_jit()
+
+    # Initialize the manager and copy static kernel sources
+    vllm_root = os.getcwd() 
+    manager = KernelExtractionManager()
+    manager.copy_static_kernels(vllm_root)
+
+except ImportError:
+    print("WARNING: kernel_extractor.py not found. Kernel extraction will be disabled.")
+except Exception as e:
+    print(f"ERROR: Failed to initialize kernel extractor: {e}")
 
 import asyncio
 import gc
